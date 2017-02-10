@@ -4,8 +4,7 @@
 ## Quick start
 
 * Create Firebase service account 
-'https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk`
-
+    * `https://console.firebase.google.com` "project" > "settings" > "service account"
 * Create file service-account.json and copy privacy key.
 * `Runner.java` - set database name
 ```
