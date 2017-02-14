@@ -14,7 +14,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class Runner {
   private static final String DATABASE_URL =
-      "https://catalogsample-cafa7.firebaseio.com";
+      "https://DB.firebaseio.com";
 
   public static void main(String[] args)
       throws InterruptedException, FileNotFoundException {
