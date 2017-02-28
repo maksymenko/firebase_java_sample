@@ -2,3 +2,7 @@ service-account.json
 .gradle/
 build/
 service-account.json
+/bin/
+.classpath
+.project
+.settings/

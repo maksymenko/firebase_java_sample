@@ -3,6 +3,10 @@ package com.sm.firebasequeue;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents Message enclosed in incoming Firebase event.
+ *
+ */
 public class Message {
   private Map<String, String> header = new HashMap<>();
   private Map<String, String> body = new HashMap<>();

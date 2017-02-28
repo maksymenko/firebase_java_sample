@@ -4,11 +4,20 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
-public class EventHandler implements ChildEventListener {
+/**
+ * Firebase event handler. listen for new events and passes to listener.
+ *
+ */
+class EventHandler implements ChildEventListener {
+  //External event listener
   private EventListener eventListener;
 
-  public EventHandler(EventListener messageListener) {
-    this.eventListener = messageListener;
+  /**
+   * Handler for child Firebase events.
+   * @param eventListener
+   */
+  EventHandler(EventListener eventListener) {
+    this.eventListener = eventListener;
   }
 
   @Override
@@ -18,7 +27,9 @@ public class EventHandler implements ChildEventListener {
   @Override
   public void onChildAdded(DataSnapshot eventSnapshot,
       String previousChildKey) {
-    eventListener.handle(eventSnapshot);
+    if (eventListener != null) {
+      eventListener.handle(eventSnapshot);
+    }
   }
 
   @Override

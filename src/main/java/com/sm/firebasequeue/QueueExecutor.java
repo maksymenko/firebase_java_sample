@@ -5,16 +5,16 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class QueueExecutor {
+class QueueExecutor {
   private static final int DEFAULT_THREAD_POOL_SIZE = 3;
   private static final long KEEP_ALIVE_TIME = 0;
   private final ThreadPoolExecutor executorPool;
 
-  public QueueExecutor(String queueName) {
+  QueueExecutor(String queueName) {
     this(queueName, DEFAULT_THREAD_POOL_SIZE);
   }
 
-  public QueueExecutor(String queueName, int threadPoolSize) {
+  QueueExecutor(String queueName, int threadPoolSize) {
     executorPool = new ThreadPoolExecutor(threadPoolSize, threadPoolSize,
         KEEP_ALIVE_TIME, TimeUnit.MILLISECONDS,
         new LinkedBlockingQueue<Runnable>(threadPoolSize),
@@ -22,7 +22,7 @@ public class QueueExecutor {
         new ThreadPoolExecutor.CallerRunsPolicy());
   }
 
-  public void execute(Runnable worker) {
+  void execute(Runnable worker) {
     executorPool.execute(worker);
   }
 
