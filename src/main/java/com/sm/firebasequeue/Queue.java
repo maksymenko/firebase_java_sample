@@ -32,7 +32,7 @@ public class Queue {
   public static void main(String[] args) throws InterruptedException {
     System.out.println(">>> queue starting...");
 
-    Queue.db(FIREBASE_URL, FIREBASE_KEY_FILE_NAME).queuePath("queue").start();
+    Queue.db(FIREBASE_URL, FIREBASE_KEY_FILE_NAME).queuePath("queue").start(1);
 
     Thread.currentThread().join();
   }
@@ -101,15 +101,13 @@ public class Queue {
     Query newMessageQuery = queueRef.orderByChild("header/state").equalTo("new")
         .limitToFirst(1);
 
+    MessageClaimer eventHandler = new MessageClaimer(queueExecutor,
+        messageListener);
     System.out
         .println(">>> waiting for message with \"header/state = new\" in path: "
             + queuePath + "/events");
 
-    newMessageQuery.addChildEventListener(new EventHandler((eventSnapshot) -> {
-      EventWorker messageWorker = new EventWorker(eventSnapshot,
-          messageListener);
-      queueExecutor.execute(messageWorker);
-    }));
+    newMessageQuery.addChildEventListener(eventHandler);
   }
 
   /**
@@ -126,7 +124,7 @@ public class Queue {
           .setDatabaseUrl(dbUrl).build();
       FirebaseApp.initializeApp(options);
     } catch (FileNotFoundException e) {
-      new IllegalArgumentException("illegal privacy key file");
+      new IllegalArgumentException("Illegal privacy key file");
     }
     FirebaseDatabase db = FirebaseDatabase.getInstance();
 

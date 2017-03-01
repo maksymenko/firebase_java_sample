@@ -16,4 +16,4 @@ include 'api'
 include 'services:webservice'
 */
 
-rootProject.name = 'firebase_java_sample'
+rootProject.name = 'SimpleFirebaseQueueServer'

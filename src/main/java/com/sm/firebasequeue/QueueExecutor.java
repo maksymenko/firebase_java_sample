@@ -1,6 +1,7 @@
 package com.sm.firebasequeue;
 
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +18,8 @@ class QueueExecutor {
   QueueExecutor(String queueName, int threadPoolSize) {
     executorPool = new ThreadPoolExecutor(threadPoolSize, threadPoolSize,
         KEEP_ALIVE_TIME, TimeUnit.MILLISECONDS,
-        new LinkedBlockingQueue<Runnable>(threadPoolSize),
+       // new LinkedBlockingQueue<Runnable>(threadPoolSize),
+        new SynchronousQueue<Runnable>(), 
         new QueueThreadFactory(queueName),
         new ThreadPoolExecutor.CallerRunsPolicy());
   }

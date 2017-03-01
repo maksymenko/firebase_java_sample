@@ -26,7 +26,7 @@ public class Message {
   public void setBody(Map<String, String> body) {
     this.body = body;
   }
-  
+
   public void addHeader(String key, String value) {
     header.put(key, value);
   }
@@ -34,4 +34,10 @@ public class Message {
   public void addBody(String key, String value) {
     body.put(key, value);
   }
+
+  @Override
+  public String toString() {
+    return "Message [header=" + header + ", body=" + body + "]";
+  }
+
 }
