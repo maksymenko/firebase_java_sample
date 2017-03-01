@@ -1,4 +1,4 @@
-# Firebase and java
+# Firebase Queue java server
 
 
 ## Quick start
@@ -6,15 +6,29 @@
 * Create Firebase service account 
     * `https://console.firebase.google.com` "project" > "settings" > "service account"
 * Create file service-account.json and copy privacy key.
-* `Runner.java` - set database name
+* Set firebase url `Queue.FIREBASE_URL = "https://{db_name}.firebaseio.com"`
+
+### Run as standalone server
 ```
 gradle run
 ```
 
-### Dependencies
-* dependencies
+### Use and library
 ```
-compile 'com.google.firebase:firebase-admin:4.1.1'
+import com.sm.firebasequeue.Queue
+.
+.
+.
+
+Queue
+    .db(FIREBASE_URL, FIREBASE_KEY_FILE_NAME)
+    .queuePath("queue")
+    .messageHandler(new MessageListener() {
+       @Override
+        public void handle(Message message) {
+        }
+      })
+    .start();
 ```
 
 
