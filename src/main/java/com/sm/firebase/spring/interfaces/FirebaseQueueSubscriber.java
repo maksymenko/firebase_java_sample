@@ -1,4 +1,4 @@
-package com.sm.firebase.spring;
+package com.sm.firebase.spring.interfaces;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
