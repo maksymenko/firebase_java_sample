@@ -1,4 +1,4 @@
-package com.sm.firebasequeue;
+package com.sm.firebase.queue;
 
 public class DefaultMessageListener implements MessageListener {
 

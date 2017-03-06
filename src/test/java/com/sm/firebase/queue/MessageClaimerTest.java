@@ -1,4 +1,4 @@
-package com.sm.firebasequeue;
+package com.sm.firebase.queue;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -21,6 +21,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction.Handler;
 import com.google.firebase.database.Transaction.Result;
+import com.sm.firebase.queue.Message;
+import com.sm.firebase.queue.MessageClaimer;
+import com.sm.firebase.queue.MessageListener;
+import com.sm.firebase.queue.QueueExecutor;
 
 public class MessageClaimerTest {
   @Mock

@@ -1,4 +1,4 @@
-package com.sm.firebasequeue;
+package com.sm.firebase.queue;
 
 import java.util.Map;
 

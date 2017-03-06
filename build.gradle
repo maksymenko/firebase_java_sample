@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = "com.sm.firebasequeue.Queue"
+mainClassName = "com.sm.firebase.spring.Starter"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
   compile "com.google.firebase:firebase-admin:4.1.1"
+  compile "org.springframework:spring-context:4.3.7.RELEASE"
 
   testCompile "junit:junit:4.12"
   testCompile "org.mockito:mockito-all:2.0.2-beta"
@@ -21,6 +22,6 @@ jar {
   baseName = 'SimpleFirebaseQueueServer'
   version = '0.0.1-SNAPSHOT'
   manifest {
-    attributes 'Main-Class': 'com.sm.firebase.Queue'
+    attributes 'Main-Class': 'com.sm.firebase.spring.Starter'
   }
 }

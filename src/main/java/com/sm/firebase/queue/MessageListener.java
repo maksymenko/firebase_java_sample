@@ -1,4 +1,4 @@
-package com.sm.firebasequeue;
+package com.sm.firebase.queue;
 
 /**
  * Interface for external message listeners. Is executed in separate thread to
