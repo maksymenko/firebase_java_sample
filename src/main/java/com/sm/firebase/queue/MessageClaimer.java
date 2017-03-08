@@ -1,5 +1,8 @@
 package com.sm.firebase.queue;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +11,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.Transaction.Handler;
 import com.google.firebase.database.Transaction.Result;
@@ -21,23 +25,38 @@ class MessageClaimer implements ChildEventListener {
   private static final String STATE_FIELD_NAME = "state";
   private static final String STATE_NEW = "new";
   private static final String STATE_IN_PROGRESS = "in_progress";
+  private static final String HEADER_STATE_KEY = "header/" + STATE_FIELD_NAME;
+  private static final String QUEUE_MESSAGE_PATH = "messages";
+  private static final String QUEUE_ERROR_PATH = "invalid";
 
-  // External event listener
+  // External message handler
   private final MessageListener messageListener;
   // Multithreaded executor.
   private final QueueExecutor queueExecutor;
+  // Firebase reference to queue
+  private final DatabaseReference queueRef;
 
-  /**
-   * Handler for child Firebase events.
-   * 
-   * @param eventListener
-   */
-  MessageClaimer(QueueExecutor queueExecutor, MessageListener messageListener) {
-    if (queueExecutor == null || messageListener == null) {
-      throw new IllegalArgumentException("Parametera can't be null");
+  public MessageClaimer(QueueExecutor queueExecutor,
+      MessageListener messageListener, DatabaseReference queueRef) {
+    if (queueExecutor == null || messageListener == null || queueRef == null) {
+      throw new IllegalArgumentException("Parameters can't be null");
     }
     this.queueExecutor = queueExecutor;
     this.messageListener = messageListener;
+    this.queueRef = queueRef;
+
+  }
+
+  public void start() {
+    DatabaseReference queueMessagesRef = queueRef.child(QUEUE_MESSAGE_PATH);
+    Query newMessageQuery = queueMessagesRef.orderByChild(HEADER_STATE_KEY)
+        .equalTo(STATE_NEW).limitToFirst(1);
+    newMessageQuery.addChildEventListener(this);
+
+    SimpleDateFormat dateFormatter = new SimpleDateFormat(
+        "yyyy-MMM-dd HH:mm:ss Z");
+    queueMessagesRef.push()
+        .setValue("initiated at: " + dateFormatter.format(new Date()));
   }
 
   @Override
@@ -47,7 +66,6 @@ class MessageClaimer implements ChildEventListener {
   @Override
   public void onChildAdded(DataSnapshot eventSnapshot,
       String previousChildKey) {
-    System.out.println(">>> child added " + eventSnapshot);
     claimMessage(eventSnapshot);
   }
 
@@ -71,14 +89,12 @@ class MessageClaimer implements ChildEventListener {
 
       @Override
       public Result doTransaction(MutableData event) {
-        System.out.println(">>> do in transaction event: " + event);
         try {
           Message message = event.getValue(Message.class);
           valid = true;
           Map<String, String> header = message.getHeader();
           header.put(STATE_FIELD_NAME, STATE_IN_PROGRESS);
           event.setValue(message);
-          System.out.println(">>> try claim message " + message);
         } catch (Exception e) {
           e.printStackTrace();
           Map<String, Object> error = new HashMap<>();
@@ -96,18 +112,13 @@ class MessageClaimer implements ChildEventListener {
       @Override
       public void onComplete(DatabaseError error, boolean committed,
           DataSnapshot message) {
-        System.out.println(">>> oncomplete  event: " + message + " committed: "
-            + committed + " valid: " + valid);
 
         if (committed && message.exists()) {
           if (valid) {
-            System.out.println(">>> message claimed: " + message);
             queueExecutor.execute(new MessageWorker(message, messageListener));
           } else {
-            System.out.println(">>> move invalid message: " + message);
-            DatabaseReference queueRootRef = eventSnapshot.getRef().getParent()
-                .getParent();
-            DatabaseReference invalidRef = queueRootRef.child("invalid").push();
+            DatabaseReference invalidRef = queueRef.child(QUEUE_ERROR_PATH)
+                .push();
             invalidRef.setValue(message.getValue());
             message.getRef().removeValue();
           }

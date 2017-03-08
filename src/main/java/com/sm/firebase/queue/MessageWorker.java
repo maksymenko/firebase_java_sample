@@ -1,19 +1,11 @@
 package com.sm.firebase.queue;
 
-import java.util.Map;
-
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
-import com.google.firebase.database.Transaction.Handler;
-import com.google.firebase.database.Transaction.Result;
 
 /**
- * Firebase event worker. Is executed in separate thread, transactionally sets
- * status to "in-progress" and passes message (extracted from event) to external
- * listener, then removes event in Firebase.
- *
+ * Firebase event worker. Is executed in separate thread, passes message
+ * (extracted from event) to external listener, then removes snapshot in
+ * Firebase.
  */
 class MessageWorker implements Runnable {
 
@@ -34,18 +26,9 @@ class MessageWorker implements Runnable {
 
   @Override
   public void run() {
-    System.out.println(">>> message " + eventSnapshot + " processed in thread");
     if (messageListener != null) {
-      messageListener.handle(eventSnapshot.getValue(Message.class));
+      messageListener.handle(eventSnapshot);
     }
-    System.out.println(">>>> remove event " + eventSnapshot);
     eventSnapshot.getRef().removeValue();
-
   }
-
-  @Override
-  public String toString() {
-    return "MessageWorker [eventSnapshot=" + eventSnapshot + "]";
-  }
-
 }

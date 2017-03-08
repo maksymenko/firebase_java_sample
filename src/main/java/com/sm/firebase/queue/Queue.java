@@ -12,102 +12,52 @@ import com.google.firebase.database.Query;
 
 /**
  * Provides implementation of messaging queue based on Firebase.
+ * 
+ * <pre>
+ * Expected message format:
+ *    messageID : {
+ *      header : {
+ *       state: new,
+ *       key:   value,
+ *       ...
+ *      }
+ *    payload {
+ *       key: value,
+ *       ...
+ *    }
+ * </pre>
  */
 public class Queue {
-  private static final String DEFAULT_QUEUE_PATH = "queue";
-  private static final String FIREBASE_URL = "https://catalogsample-cafa7.firebaseio.com";
-  private static final String FIREBASE_KEY_FILE_NAME = "service-account.json";
-
-  private String dbUrl;
-  private String serviceAccountFileName;
-  private String queuePath = DEFAULT_QUEUE_PATH;
-  // External handler (subscriber) which listen and handles incoming messages.
-  private MessageListener messageListener = new DefaultMessageListener();
+  private final static String MESSAGE_BROCKER_NAME = "messageBrocker";
+  private final static int THREAD_POOL_SIZE = 4;
+  private DatabaseReference messageBrokerRef;
+  private QueueExecutor queueExecutor;
 
   /**
-   * Runner method is used in when queue executed as standalone application.
-   * Method starts queue server, then main thread is blocked until application
-   * will be terminated.
-   */
-  public static void main(String[] args) throws InterruptedException {
-    System.out.println(">>> queue starting...");
-
-    Queue.db(FIREBASE_URL, FIREBASE_KEY_FILE_NAME).queuePath("queue").start(1);
-
-    Thread.currentThread().join();
-  }
-
-  /**
-   * Main builder method. Creates queue instance based on Firebase parameters..
+   * Creates queue instance based on Firebase parameters.
    *
    * @param dbUrl Firebase URL.
    * @param serviceAccountFileName file contains private key to firebase
    *          project.
-   * @return initiated instance of queue.
    */
-  public static Queue db(String dbUrl, String serviceAccountFileName) {
-    Queue queue = new Queue();
-    queue.dbUrl = dbUrl;
-    queue.serviceAccountFileName = serviceAccountFileName;
-    return queue;
+  public Queue(String dbUrl, String serviceAccountFileName) {
+    this.messageBrokerRef = initDb(dbUrl, serviceAccountFileName);
+    this.queueExecutor = new QueueExecutor(MESSAGE_BROCKER_NAME,
+        THREAD_POOL_SIZE);
   }
 
   /**
-   * Assigns external message listener for incoming messages.
+   * Listen node and pass value to handler.
    * 
-   * @param messageListener
-   * @return configured instance of queue.
+   * @param queueName - node path
+   * @param listener - handler for incoming message
    */
-  public Queue messageHandler(MessageListener messageListener) {
-    this.messageListener = messageListener;
-    return this;
-  }
+  public void listenQueue(String queueName, MessageListener listener) {
+    DatabaseReference queueRef = messageBrokerRef.child(queueName);
 
-  /**
-   * Defines path in Firebase database where incoming messages are expected.
-   *
-   * @param queuePath
-   * @return
-   */
-  public Queue queuePath(String queuePath) {
-    this.queuePath = queuePath;
-    return this;
-  }
-
-  /**
-   * Starts listen incoming messages, with default thread pool size.
-   */
-  public void start() {
-    startListener(new QueueExecutor(queuePath));
-  }
-
-  /**
-   * Starts listen incoming messages.
-   *
-   * @param threadPoolSize number of threads to handle incoming messages.
-   */
-  public void start(int threadPoolSize) {
-    startListener(new QueueExecutor(queuePath, threadPoolSize));
-  }
-
-  /**
-   * Starts listen incoming messages queried by predefined query.
-   *
-   * @param queueExecutor multithreaded worker executor.
-   */
-  private void startListener(QueueExecutor queueExecutor) {
-    DatabaseReference queueRef = initDb();
-
-    Query newMessageQuery = queueRef.orderByChild("header/state").equalTo("new")
-        .limitToFirst(1);
-
-    MessageClaimer eventHandler = new MessageClaimer(queueExecutor,
-        messageListener);
-    System.out
-        .println(">>> waiting for message with \"header/state = new\" in path: "
-            + queuePath + "/events");
-
-    newMessageQuery.addChildEventListener(eventHandler);
+    MessageClaimer messageClaimer = new MessageClaimer(queueExecutor, listener,
+        queueRef);
+    messageClaimer.start();
   }
 
   /**
@@ -115,7 +65,8 @@ public class Queue {
    * 
    * @return
    */
-  private DatabaseReference initDb() {
+  private DatabaseReference initDb(String dbUrl,
+      String serviceAccountFileName) {
     try {
       FileInputStream serviceAccount = new FileInputStream(
           serviceAccountFileName);
@@ -128,6 +79,7 @@ public class Queue {
     }
     FirebaseDatabase db = FirebaseDatabase.getInstance();
 
-    return db.getReference(queuePath + "/events");
+    return db.getReference(MESSAGE_BROCKER_NAME);
   }
+
 }

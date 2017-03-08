@@ -7,11 +7,15 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
+import com.sm.firebase.queue.Queue;
 import com.sm.firebase.spring.BindingAnnotations.FirebaseQueueOnMessage;
 import com.sm.firebase.spring.BindingAnnotations.FirebaseQueueSubscriber;
 
 @Component
 public class FirebaseQueuePostProcessor implements BeanPostProcessor {
+  private static final String FIREBASE_URL = "https://catalogsample-cafa7.firebaseio.com";
+  private static final String FIREBASE_KEY_FILE_NAME = "service-account.json";
+  private Queue queue = new Queue(FIREBASE_URL, FIREBASE_KEY_FILE_NAME);
 
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName)
@@ -28,21 +32,17 @@ public class FirebaseQueuePostProcessor implements BeanPostProcessor {
         .findAnnotation(bean.getClass(), FirebaseQueueSubscriber.class);
 
     if (firebaseQueueSubscriber != null) {
-
-      System.out
-          .println(">> Found subscriber. bean:" + beanName + " class: " + bean);
-
       for (Method method : bean.getClass().getMethods()) {
-
         FirebaseQueueOnMessage onMessageHandler = AnnotationUtils
             .findAnnotation(method, FirebaseQueueOnMessage.class);
         if (onMessageHandler != null) {
-          System.out.println(">>> handler for queue: " + onMessageHandler.queueName());
-          System.out.println(">>>> methodName: " + method.getName());
-          Class<?>[] parameterTypes = method.getParameterTypes();
-          for (Class<?> parameterType : parameterTypes) {
-            System.out.println(">>>> parameterType: " + parameterType);
-          }
+          FirebaseQueueSpringAdapter adapter = new FirebaseQueueSpringAdapter(
+              method);
+          String queueName = onMessageHandler.queueName();
+          queue.listenQueue(queueName, adapter);
+          System.out.println(">>> started queue: '" + queueName
+              + "' subscribed bean '" + beanName + "'  handled by method: '"
+              + method.getName() + "'");
         }
       }
     }

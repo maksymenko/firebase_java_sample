@@ -7,7 +7,8 @@ import com.sm.firebase.spring.BindingAnnotations.FirebaseQueueSubscriber;
 public class FirebaseQueueMessageSubscriber {
 
   @FirebaseQueueOnMessage(queueName = "queue_name")
-  public void hello(String str) {
-    System.out.println(">>>> say hello");
+  public String hello(MessageDto message) {
+    System.out.println(">>>> say hello " + message);
+    return "hello: " + message;
   }
 }

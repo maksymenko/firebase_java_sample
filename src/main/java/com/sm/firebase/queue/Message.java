@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class Message {
   private Map<String, String> header = new HashMap<>();
-  private Map<String, String> body = new HashMap<>();
+  private Map<String, String> payload = new HashMap<>();
 
   public Map<String, String> getHeader() {
     return header;
@@ -19,12 +19,12 @@ public class Message {
     this.header = header;
   }
 
-  public Map<String, String> getBody() {
-    return body;
+  public Map<String, String> getPayload() {
+    return payload;
   }
 
-  public void setBody(Map<String, String> body) {
-    this.body = body;
+  public void setBody(Map<String, String> payload) {
+    this.payload = payload;
   }
 
   public void addHeader(String key, String value) {
@@ -32,12 +32,12 @@ public class Message {
   }
 
   public void addBody(String key, String value) {
-    body.put(key, value);
+    payload.put(key, value);
   }
 
   @Override
   public String toString() {
-    return "Message [header=" + header + ", body=" + body + "]";
+    return "Message [header=" + header + ", payload=" + payload + "]";
   }
 
 }

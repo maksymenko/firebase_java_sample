@@ -9,21 +9,15 @@ import org.springframework.context.support.AbstractApplicationContext;
 @ComponentScan("com.sm.firebase.spring")
 public class Starter {
   public static void main(String[] args) {
-    System.out.println(">>>");
+    System.out.println(">>>Firebase Message broker started");
 
     try (
         AbstractApplicationContext app = new AnnotationConfigApplicationContext(
             Starter.class)) {
-//
-//      System.out.println(">>> app: " + app);
-//      for (String beanName : app.getBeanDefinitionNames()) {
-//        System.out.println(">>> " + beanName);
-//      }
-//
-//      FirebaseQueueMessageSubscriber subscriber = app
-//          .getBean(FirebaseQueueMessageSubscriber.class);
-//      subscriber.hello();
+      Thread.currentThread().join();
 
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
   }
 }
