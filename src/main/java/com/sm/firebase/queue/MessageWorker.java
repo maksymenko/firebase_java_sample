@@ -29,6 +29,6 @@ class MessageWorker implements Runnable {
     if (messageListener != null) {
       messageListener.handle(eventSnapshot);
     }
-    eventSnapshot.getRef().removeValue();
+    //eventSnapshot.getRef().removeValue();
   }
 }

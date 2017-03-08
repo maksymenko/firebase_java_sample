@@ -9,7 +9,7 @@ import java.util.Map;
  */
 public class Message {
   private Map<String, String> header = new HashMap<>();
-  private Map<String, String> payload = new HashMap<>();
+  private Object payload = new Object();
 
   public Map<String, String> getHeader() {
     return header;
@@ -19,20 +19,12 @@ public class Message {
     this.header = header;
   }
 
-  public Map<String, String> getPayload() {
+  public Object getPayload() {
     return payload;
   }
 
-  public void setBody(Map<String, String> payload) {
+  public void setPayload(Object payload) {
     this.payload = payload;
-  }
-
-  public void addHeader(String key, String value) {
-    header.put(key, value);
-  }
-
-  public void addBody(String key, String value) {
-    payload.put(key, value);
   }
 
   @Override
