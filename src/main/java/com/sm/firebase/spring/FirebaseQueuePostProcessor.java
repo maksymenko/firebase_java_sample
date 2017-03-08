@@ -7,8 +7,8 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 
-import com.sm.firebase.spring.interfaces.FirebaseQueueMessageHandler;
-import com.sm.firebase.spring.interfaces.FirebaseQueueSubscriber;
+import com.sm.firebase.spring.BindingAnnotations.FirebaseQueueOnMessage;
+import com.sm.firebase.spring.BindingAnnotations.FirebaseQueueSubscriber;
 
 @Component
 public class FirebaseQueuePostProcessor implements BeanPostProcessor {
@@ -29,18 +29,16 @@ public class FirebaseQueuePostProcessor implements BeanPostProcessor {
 
     if (firebaseQueueSubscriber != null) {
 
-      System.out.println(">> Found sibscriber for queue: \""
-          + firebaseQueueSubscriber.queueName() + "\" beanName: " + beanName
-          + " class: " + bean);
+      System.out
+          .println(">> Found subscriber. bean:" + beanName + " class: " + bean);
 
       for (Method method : bean.getClass().getMethods()) {
 
-        FirebaseQueueMessageHandler messageHandler = AnnotationUtils
-            .findAnnotation(method, FirebaseQueueMessageHandler.class);
-        if (messageHandler != null) {
-          System.out.println(">>> method to handle: " + method.getName());
-          System.out.println(">>>> queue: " + messageHandler.queueName());
-          System.out.println(">>>> messageName: " + messageHandler.messageName());
+        FirebaseQueueOnMessage onMessageHandler = AnnotationUtils
+            .findAnnotation(method, FirebaseQueueOnMessage.class);
+        if (onMessageHandler != null) {
+          System.out.println(">>> handler for queue: " + onMessageHandler.queueName());
+          System.out.println(">>>> methodName: " + method.getName());
           Class<?>[] parameterTypes = method.getParameterTypes();
           for (Class<?> parameterType : parameterTypes) {
             System.out.println(">>>> parameterType: " + parameterType);

@@ -1,13 +1,13 @@
 package com.sm.firebase.spring;
 
-import com.sm.firebase.spring.interfaces.FirebaseQueueMessageHandler;
-import com.sm.firebase.spring.interfaces.FirebaseQueueSubscriber;
+import com.sm.firebase.spring.BindingAnnotations.FirebaseQueueOnMessage;
+import com.sm.firebase.spring.BindingAnnotations.FirebaseQueueSubscriber;
 
-@ FirebaseQueueSubscriber(queueName = "queue_name")
+@FirebaseQueueSubscriber
 public class FirebaseQueueMessageSubscriber {
-  
-  @FirebaseQueueMessageHandler
-  public void hello(String str){
+
+  @FirebaseQueueOnMessage(queueName = "queue_name")
+  public void hello(String str) {
     System.out.println(">>>> say hello");
   }
 }
