@@ -15,5 +15,4 @@ public class MessageDto {
   public String toString() {
     return "MessageDto [name=" + name + "]";
   }
-
 }

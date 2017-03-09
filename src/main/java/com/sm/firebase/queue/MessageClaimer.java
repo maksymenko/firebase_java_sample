@@ -1,7 +1,6 @@
 package com.sm.firebase.queue;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,8 +54,8 @@ class MessageClaimer implements ChildEventListener {
 
     SimpleDateFormat dateFormatter = new SimpleDateFormat(
         "yyyy-MMM-dd HH:mm:ss Z");
-    queueMessagesRef.push()
-        .setValue("initiated at: " + dateFormatter.format(new Date()));
+    queueRef.push()
+        .setValue("Listener started at: " + dateFormatter.format(new Date()));
   }
 
   @Override

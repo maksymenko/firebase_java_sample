@@ -12,16 +12,16 @@ import com.sm.firebase.spring.BindingAnnotations.FirebaseQueueSubscriber;
 @FirebaseQueueSubscriber
 public class FirebaseQueueMessageSubscriber {
 
-  // @FirebaseQueueOnMessage(queueName = "queue_name")
+  @FirebaseQueueOnMessage(queueName = "dto_queue")
   public String hello(MessageDto message) {
-    System.out.println(">>>> say hello " + message);
-    return "hello: " + message;
+    System.out.println(">>>> dto " + message);
+    return "dto: " + message;
   }
 
-  @FirebaseQueueOnMessage(queueName = "queue_name")
+  @FirebaseQueueOnMessage(queueName = "string_queue")
   public String hello1(String message) {
-    System.out.println(">>>> say hello " + message);
-    return "hello: " + message;
+    System.out.println(">>>> string " + message);
+    return "string: " + message;
   }
 
   public void sendDebugMessage() {

@@ -9,7 +9,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 @ComponentScan("com.sm.firebase.spring")  
 public class Starter {
   public static void main(String[] args) {
-    System.out.println(">>>Firebase Message broker started");
+    System.out.println(">>>Firebase Message broker server started");
 
     try (
         AbstractApplicationContext app = new AnnotationConfigApplicationContext(

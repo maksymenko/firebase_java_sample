@@ -8,7 +8,6 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseCredentials;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 
 /**
  * Provides implementation of messaging queue based on Firebase.
@@ -21,10 +20,8 @@ import com.google.firebase.database.Query;
  *       key:   value,
  *       ...
  *      }
- *    payload {
- *       key: value,
- *       ...
- *    }
+ *    payload: Any Object
+ *    } 
  * </pre>
  */
 public class Queue {

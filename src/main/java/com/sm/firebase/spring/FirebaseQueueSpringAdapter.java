@@ -10,10 +10,12 @@ import com.google.firebase.database.GenericTypeIndicator;
 import com.sm.firebase.queue.MessageListener;
 
 public class FirebaseQueueSpringAdapter implements MessageListener {
+  private Object bean;
   private Method method;
 
-  public FirebaseQueueSpringAdapter(Method method) {
+  public FirebaseQueueSpringAdapter(Object bean, Method method) {
     this.method = method;
+    this.bean = bean;
   }
 
   @Override
@@ -22,24 +24,13 @@ public class FirebaseQueueSpringAdapter implements MessageListener {
     };
     Map<String, String> header = eventSnapshot.child("header")
         .getValue(genericTypeIndicator);
-    System.out.println(">>> header: " + header);
-    header.forEach((key, value) -> {
-      System.out.println(">>>> " + key + " : " + value);
-    });
 
     if (method.getParameterCount() == 1) {
       Class<?> parameterType = method.getParameterTypes()[0];
-      System.out.println(">>> expected message type: " + parameterType);
-
       Object payload = eventSnapshot.child("payload").getValue(parameterType);
-      System.out.println(">> payload: " + payload);
-      System.out.println(">>>> is type of " + parameterType + "   "
-          + parameterType.isInstance(payload));
-      System.out.println(">>> message class: "+ payload.getClass());
-
       try {
         method.setAccessible(true);
-        Object response = method.invoke(payload);
+        Object response = method.invoke(bean, payload);
 
         String replyTo = String.valueOf(header.get("replyTo"));
         if (replyTo != null && replyTo.length() > 0) {
@@ -55,12 +46,10 @@ public class FirebaseQueueSpringAdapter implements MessageListener {
       throw new IllegalStateException(
           "Only one parameter is expected in message handler");
     }
-
   }
 
   private void reply(String replyTo, Object response, FirebaseDatabase db) {
     DatabaseReference ref = db.getReference(replyTo);
     ref.setValue(response);
   }
-
 }

@@ -37,16 +37,15 @@ public class FirebaseQueuePostProcessor implements BeanPostProcessor {
             .findAnnotation(method, FirebaseQueueOnMessage.class);
         if (onMessageHandler != null) {
           FirebaseQueueSpringAdapter adapter = new FirebaseQueueSpringAdapter(
-              method);
+              bean, method);
           String queueName = onMessageHandler.queueName();
           queue.listenQueue(queueName, adapter);
           System.out.println(">>> started queue: '" + queueName
-              + "' subscribed bean '" + beanName + "'  handled by method: '"
+              + "' subscriber bean '" + beanName + "'  handled by method: '"
               + method.getName() + "'");
         }
       }
     }
-
     return bean;
   }
 

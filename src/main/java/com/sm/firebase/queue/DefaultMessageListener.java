@@ -15,11 +15,7 @@ public class DefaultMessageListener implements MessageListener {
     message.getHeader().forEach((key, value) -> {
       System.out.println("  " + key + " : " + value);
     });
-
-    System.out.println(" body");
-    message.getBody().forEach((key, value) -> {
-      System.out.println("  " + key + " : " + value);
-    });
+    System.out.println(" payload: " + message.getPayload());
     System.out.println("============================");
   }
 
