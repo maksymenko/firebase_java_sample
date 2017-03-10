@@ -35,8 +35,8 @@ class MessageClaimer implements ChildEventListener {
   // Firebase reference to queue
   private final DatabaseReference queueRef;
 
-  public MessageClaimer(QueueExecutor queueExecutor,
-      MessageListener messageListener, DatabaseReference queueRef) {
+  public MessageClaimer(QueueExecutor queueExecutor, MessageListener messageListener,
+      DatabaseReference queueRef) {
     if (queueExecutor == null || messageListener == null || queueRef == null) {
       throw new IllegalArgumentException("Parameters can't be null");
     }
@@ -48,14 +48,12 @@ class MessageClaimer implements ChildEventListener {
 
   public void start() {
     DatabaseReference queueMessagesRef = queueRef.child(QUEUE_MESSAGE_PATH);
-    Query newMessageQuery = queueMessagesRef.orderByChild(HEADER_STATE_KEY)
-        .equalTo(STATE_NEW).limitToFirst(1);
+    Query newMessageQuery = queueMessagesRef.orderByChild(HEADER_STATE_KEY).equalTo(STATE_NEW)
+        .limitToFirst(1);
     newMessageQuery.addChildEventListener(this);
 
-    SimpleDateFormat dateFormatter = new SimpleDateFormat(
-        "yyyy-MMM-dd HH:mm:ss Z");
-    queueRef.push()
-        .setValue("Listener started at: " + dateFormatter.format(new Date()));
+    SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss Z");
+    queueRef.push().setValue("Listener started at: " + dateFormatter.format(new Date()));
   }
 
   @Override
@@ -63,19 +61,16 @@ class MessageClaimer implements ChildEventListener {
   }
 
   @Override
-  public void onChildAdded(DataSnapshot eventSnapshot,
-      String previousChildKey) {
+  public void onChildAdded(DataSnapshot eventSnapshot, String previousChildKey) {
     claimMessage(eventSnapshot);
   }
 
   @Override
-  public void onChildChanged(DataSnapshot eventSnapshot,
-      String previousChildKey) {
+  public void onChildChanged(DataSnapshot eventSnapshot, String previousChildKey) {
   }
 
   @Override
-  public void onChildMoved(DataSnapshot eventSnapshot,
-      String previousChildKey) {
+  public void onChildMoved(DataSnapshot eventSnapshot, String previousChildKey) {
   }
 
   @Override
@@ -109,15 +104,13 @@ class MessageClaimer implements ChildEventListener {
        * Handles event if state is updated successfully in transaction.
        */
       @Override
-      public void onComplete(DatabaseError error, boolean committed,
-          DataSnapshot message) {
+      public void onComplete(DatabaseError error, boolean committed, DataSnapshot message) {
 
         if (committed && message.exists()) {
           if (valid) {
             queueExecutor.execute(new MessageWorker(message, messageListener));
           } else {
-            DatabaseReference invalidRef = queueRef.child(QUEUE_ERROR_PATH)
-                .push();
+            DatabaseReference invalidRef = queueRef.child(QUEUE_ERROR_PATH).push();
             invalidRef.setValue(message.getValue());
             message.getRef().removeValue();
           }
