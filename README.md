@@ -13,22 +13,19 @@
 gradle run
 ```
 
-### Use and library
-```
-import com.sm.firebasequeue.Queue
-.
-.
-.
+### Usage
+* Create Spring bean and annotatate with `@FirebaseQueueSubscriber` annotation.
+* Add input message handler by anitation method with `FirebaseQueueOnMessage` annotation.
 
-Queue
-    .db(FIREBASE_URL, FIREBASE_KEY_FILE_NAME)
-    .queuePath("queue")
-    .messageHandler(new MessageListener() {
-       @Override
-        public void handle(Message message) {
-        }
-      })
-    .start();
+```
+@FirebaseQueueSubscriber
+public class FirebaseQueueMessageSubscriber {
+
+  @FirebaseQueueOnMessage(queueName = "dto_queue")
+  public ResponseDto hello(RequestDto request) {
+    return new ResponseDto("Hello " + request.getName()); 
+  }
+}
 ```
 
 
