@@ -1,4 +1,4 @@
-package com.sm.firebase.spring;
+package com.sm.firebase.app;
 
 public class MessageDto {
   private String name;

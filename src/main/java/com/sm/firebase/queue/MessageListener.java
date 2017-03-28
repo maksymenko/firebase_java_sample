@@ -7,6 +7,8 @@ import com.google.firebase.database.DataSnapshot;
  * handle incoming message.
  *
  */
+// TODO: use Message class instead of snapshot, to avoid firebase specific
+// classes in external listeners.
 public interface MessageListener {
   void handle(DataSnapshot eventSnapshot);
 }

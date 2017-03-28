@@ -5,6 +5,11 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+
+/**
+ * Thread pool to handle incoming message from Firebase realtime database.
+ *
+ */
 class QueueExecutor {
   private static final int DEFAULT_THREAD_POOL_SIZE = 3;
   private static final long KEEP_ALIVE_TIME = 0;

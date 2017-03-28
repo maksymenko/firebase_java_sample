@@ -1,4 +1,4 @@
-package com.sm.firebase.spring;
+package com.sm.firebase.app;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.AbstractApplicationContext;
 
 @Configuration
-@ComponentScan("com.sm.firebase.spring")  
+@ComponentScan("com.sm.firebase")  
 public class Starter {
   public static void main(String[] args) {
-    System.out.println(">>>Firebase Message broker server started");
+    System.out.println(">>>Firebase Message broker server starting...");
 
     try (
         AbstractApplicationContext app = new AnnotationConfigApplicationContext(

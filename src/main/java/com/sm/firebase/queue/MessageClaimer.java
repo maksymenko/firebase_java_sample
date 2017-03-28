@@ -27,6 +27,8 @@ class MessageClaimer implements ChildEventListener {
   private static final String HEADER_STATE_KEY = "header/" + STATE_FIELD_NAME;
   private static final String QUEUE_MESSAGE_PATH = "messages";
   private static final String QUEUE_ERROR_PATH = "invalid";
+  private static final SimpleDateFormat dateFormatter = new SimpleDateFormat(
+      "yyyy-MMM-dd HH:mm:ss Z");
 
   // External message handler
   private final MessageListener messageListener;
@@ -46,6 +48,10 @@ class MessageClaimer implements ChildEventListener {
 
   }
 
+  /**
+   * Creates and starts listener for given path (queueRef) in firebase realtime
+   * database.
+   */
   public void start() {
     DatabaseReference queueMessagesRef = queueRef.child(QUEUE_MESSAGE_PATH);
     Query newMessageQuery = queueMessagesRef.orderByChild(HEADER_STATE_KEY).equalTo(STATE_NEW)
@@ -77,6 +83,9 @@ class MessageClaimer implements ChildEventListener {
   public void onChildRemoved(DataSnapshot eventSnapshot) {
   }
 
+  /**
+   * Handles new message in queue.
+   */
   private void claimMessage(DataSnapshot eventSnapshot) {
     eventSnapshot.getRef().runTransaction(new Handler() {
       private boolean valid = false;
@@ -88,6 +97,10 @@ class MessageClaimer implements ChildEventListener {
           valid = true;
           Map<String, String> header = message.getHeader();
           header.put(STATE_FIELD_NAME, STATE_IN_PROGRESS);
+          header.put("last_attempt", dateFormatter.format(new Date()));
+          String retryCntStr = header.getOrDefault("retry_cnt", "0");
+          int retryCnt = Integer.parseInt(retryCntStr);
+          header.put("retry_cnt", Integer.toString(++retryCnt));
           event.setValue(message);
         } catch (Exception e) {
           e.printStackTrace();
@@ -101,7 +114,9 @@ class MessageClaimer implements ChildEventListener {
       }
 
       /**
-       * Handles event if state is updated successfully in transaction.
+       * Calls message handler and passes received message if state is updated
+       * successfully in transaction. Ensures that only one listener receives
+       * message.
        */
       @Override
       public void onComplete(DatabaseError error, boolean committed, DataSnapshot message) {

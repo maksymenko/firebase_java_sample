@@ -19,6 +19,10 @@ public class Message {
     this.header = header;
   }
 
+  public void addHeaderParam(String key, String velue) {
+    header.put(key, velue);
+  }
+
   public Object getPayload() {
     return payload;
   }

@@ -28,6 +28,10 @@ public class FirebaseQueueMessageSubscriber {
 }
 ```
 
+TODO:
+* Extract parameters in yaml file.
+* use logger.
+
 
 ### References
 * https://firebase.google.com/docs/admin/setup

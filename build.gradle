@@ -13,6 +13,7 @@ repositories {
 dependencies {
   compile "com.google.firebase:firebase-admin:4.1.1"
   compile "org.springframework:spring-context:4.3.7.RELEASE"
+  compile "org.apache.commons:commons-lang3:3.5"
 
   testCompile "junit:junit:4.12"
   testCompile "org.mockito:mockito-all:2.0.2-beta"

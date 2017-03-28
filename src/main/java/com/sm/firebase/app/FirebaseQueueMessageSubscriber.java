@@ -1,4 +1,4 @@
-package com.sm.firebase.spring;
+package com.sm.firebase.app;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +13,13 @@ import com.sm.firebase.spring.BindingAnnotations.FirebaseQueueSubscriber;
 public class FirebaseQueueMessageSubscriber {
 
   @FirebaseQueueOnMessage(queueName = "dto_queue")
-  public String hello(MessageDto message) {
+  public String helloDto(MessageDto message) {
     System.out.println(">>>> dto " + message);
     return "dto: " + message;
   }
 
   @FirebaseQueueOnMessage(queueName = "string_queue")
-  public String hello1(String message) {
+  public String helloString(String message) {
     System.out.println(">>>> string " + message);
     return "string: " + message;
   }
@@ -27,7 +27,7 @@ public class FirebaseQueueMessageSubscriber {
   public void sendDebugMessage() {
     FirebaseDatabase db = FirebaseDatabase.getInstance();
     DatabaseReference ref = db
-        .getReference("messageBrocker/queue_name/messages");
+        .getReference("messageBrocker/string_queue/messages");
 
     Map<String, String> header = new HashMap<>();
     header.put("state", "new");
